@@ -1,0 +1,53 @@
+<div
+  class="form-component grid grid-cols-1 py-10"
+  *ngIf="questions.controls['questions']?.value?.length"
+>
+  <form [formGroup]="questions">
+    <div formArrayName="questions">
+      <ng-container *ngIf="store.questions$ | async as questionList">
+        <ng-container *ngFor="let question of questionList; let i = index">
+          <app-question
+            class="block my-4"
+            [(ngModel)]="questions.controls['questions'].value[i]"
+            (ngModelChange)="checkFormIsValid()"
+            [ngModelOptions]="{ standalone: true }"
+            [question]="question"
+          ></app-question>
+        </ng-container>
+      </ng-container>
+    </div>
+  </form>
+
+  <button
+    routerLink="builder"
+    class="bg-none text-blue-500 font-bold text-left rounded-full"
+    (click)="showForm = !showForm"
+  >
+    + Add New Question
+  </button>
+
+  <div class="flex justify-end mt-4">
+    <button
+      [disabled]="!questions.valid"
+      [ngClass]="{ 'bg-gray-500': !questions.valid }"
+      class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+      (click)="submit()"
+    >
+      Submit
+    </button>
+  </div>
+</div>
+
+<ng-container *ngIf="showForm">
+  <div class="modal">
+    <div class="backdrop" (click)="showForm = !showForm"></div>
+    <div class="relative w-full h-full max-w-2xl md:h-auto">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow p-8">
+        <app-form-builder
+          (questionAdded)="showForm = !showForm"
+        ></app-form-builder>
+      </div>
+    </div>
+  </div>
+</ng-container>

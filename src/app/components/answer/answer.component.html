@@ -1,0 +1,37 @@
+<div
+  class="answer-component"
+  *ngIf="answer.answer || answer.checkedOptions.length"
+>
+  <div class="grid-cols-1">
+    <div class="font-bold text-lg">
+      {{ answer.question.question }}
+      {{ answer.question.required ? "*" : "" }}
+    </div>
+
+    <div class="answer">
+      <ng-container *ngIf="answer.question.type === 'text'">
+        <div class="answer-text">{{ answer.answer }}</div>
+      </ng-container>
+
+      <ng-container *ngIf="answer.question.type === 'checkbox'">
+        <div class="answer-checkbox">
+          <ng-container *ngFor="let option of answer.checkedOptions">
+            <div class="grid grid-cols-8">
+              <div class="col-span-5">
+                {{ option }}
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="answer.question.allowOther && answer.answer">
+            <div class="grid grid-cols-8">
+              <div class="col-span-8">
+                <div class="answer-text">Other - {{ answer.answer }}</div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

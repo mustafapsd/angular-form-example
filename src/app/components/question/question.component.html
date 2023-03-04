@@ -1,0 +1,53 @@
+<div class="question-component" *ngIf="question && questionAnswer">
+  <div class="grid-cols-1">
+    <div class="font-bold">{{ question.question }}{{question.required ? '*' : ''}}</div>
+
+    <ng-container *ngIf="question.type === 'text'; else checkBoxTemplate">
+      <textarea
+        class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        rows="4"
+        [(ngModel)]="questionAnswer.answer"
+        (change)="changedAnswer()"
+      ></textarea>
+    </ng-container>
+
+    <ng-template #checkBoxTemplate>
+      <ng-container *ngFor="let option of question.options">
+        <div class="grid grid-cols-8">
+          <div class="col-span-5">
+            <input
+              type="checkbox"
+              class="mr-2"
+              [value]="option"
+              (change)="checkAnswer($event)"
+            />
+            {{ option }}
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="question.allowOther">
+        <div class="grid grid-cols-8">
+          <div class="col-span-5">
+            <input
+              id="other"
+              type="checkbox"
+              class="mr-2"
+              value="other"
+              [(ngModel)]="otherSelected"
+            />
+            <label for="other">Other</label>
+          </div>
+
+          <div class="col-span-8">
+            <app-input
+              *ngIf="otherSelected"
+              placeholder="Please specify"
+              [(ngModel)]="questionAnswer.answer"
+            ></app-input>
+          </div>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>
