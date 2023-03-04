@@ -44,6 +44,7 @@
               *ngIf="otherSelected"
               placeholder="Please specify"
               [(ngModel)]="questionAnswer.answer"
+              (ngModelChange)="changedAnswer()"
             ></app-input>
           </div>
         </div>

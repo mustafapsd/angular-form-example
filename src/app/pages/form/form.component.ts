@@ -1,14 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Answer } from 'src/app/interfaces/answer.interface';
-import { Question } from 'src/app/interfaces/question.interface';
 import { FormStoreService } from 'src/app/services/form-store.service';
 
 @Component({
@@ -33,17 +26,20 @@ export class FormComponent implements OnInit {
     });
 
     this.store.questions$.subscribe((questions) => {
-      this.questions.controls['questions'] = this.formBuilder.array(
-        questions.map((question) => {
-          return this.formBuilder.group({
-            answer: [''],
-            checkedOptions: this.formBuilder.array([]),
-            required: [question.required],
-          });
-        })
-      );
+      this.questions = this.formBuilder.group({
+        questions: this.formBuilder.array(
+          questions.map((question) => {
+            return this.formBuilder.group({
+              answer: [''],
+              checkedOptions: this.formBuilder.array([]),
+              required: [question.required],
+            });
+          })
+        ),
+      });
 
       setTimeout(() => {
+        console.log(this.questions);
         this.checkFormIsValid();
       }, 200);
     });
@@ -94,7 +90,7 @@ export class FormComponent implements OnInit {
 
   submit() {
     this.store.clearAnswers();
-
+    console.log(this.questions.value);
     this.questions.value.questions.forEach(
       (
         question: {
@@ -109,6 +105,8 @@ export class FormComponent implements OnInit {
 
         ANSWER.answer = question.answer;
         ANSWER.checkedOptions = question.checkedOptions;
+
+        console.log(ANSWER);
 
         this.store.addAnswer(ANSWER);
       }

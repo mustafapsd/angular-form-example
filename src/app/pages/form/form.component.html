@@ -1,7 +1,4 @@
-<div
-  class="form-component grid grid-cols-1 py-10"
-  *ngIf="questions.controls['questions']?.value?.length"
->
+<div class="form-component grid grid-cols-1 py-10">
   <form [formGroup]="questions">
     <div formArrayName="questions">
       <ng-container *ngIf="store.questions$ | async as questionList">
@@ -18,16 +15,31 @@
     </div>
   </form>
 
-  <button
-    routerLink="builder"
-    class="bg-none text-blue-500 font-bold text-left rounded-full"
-    (click)="showForm = !showForm"
+  <ng-container
+    *ngIf="questions.controls['questions'].value.length; else flatButton"
   >
-    + Add New Question
-  </button>
+    <button
+      routerLink="builder"
+      class="bg-none text-blue-500 font-bold text-left rounded-full"
+      (click)="showForm = !showForm"
+    >
+      + Add New Question
+    </button>
+  </ng-container>
+
+  <ng-template #flatButton>
+    <button
+      routerLink="builder"
+      class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+      (click)="showForm = !showForm"
+    >
+      Add New Question
+    </button>
+  </ng-template>
 
   <div class="flex justify-end mt-4">
     <button
+      *ngIf="questions.controls['questions'].value.length"
       [disabled]="!questions.valid"
       [ngClass]="{ 'bg-gray-500': !questions.valid }"
       class="bg-blue-500 text-white font-bold py-2 px-4 rounded"

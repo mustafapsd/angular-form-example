@@ -13,26 +13,7 @@ export class FormStoreService {
     []
   );
 
-  constructor() {
-    const questions = localStorage.getItem('questions');
-    const answers = localStorage.getItem('answers');
-
-    if (questions) {
-      this.questions$.next(JSON.parse(questions));
-    }
-
-    if (answers) {
-      this.answers$.next(JSON.parse(answers));
-    }
-
-    this.questions$.subscribe((questions) => {
-      localStorage.setItem('questions', JSON.stringify(questions));
-    });
-
-    this.answers$.subscribe((answers) => {
-      localStorage.setItem('answers', JSON.stringify(answers));
-    });
-  }
+  constructor() {}
 
   addQuestion(question: Question) {
     this.questions$.next([...this.questions$.value, question]);
