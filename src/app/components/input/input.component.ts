@@ -5,13 +5,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import {
-  AbstractControl,
-  ControlValueAccessor,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
-  Validator,
-} from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { InputTypes } from 'src/app/interfaces/question.interface';
 
 @Component({
@@ -24,14 +18,9 @@ import { InputTypes } from 'src/app/interfaces/question.interface';
       useExisting: forwardRef(() => InputComponent),
       multi: true,
     },
-    {
-      provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => InputComponent),
-      multi: true,
-    },
   ],
 })
-export class InputComponent implements ControlValueAccessor, Validator {
+export class InputComponent implements ControlValueAccessor {
   @Input() value: string = '';
   @Input() label?: string;
   @Input() placeholder?: string = '';
@@ -53,9 +42,5 @@ export class InputComponent implements ControlValueAccessor, Validator {
 
   registerOnTouched(fn: () => void): void {
     this.onTouch = fn;
-  }
-
-  validate(control: AbstractControl): { [key: string]: any } | null {
-    return null;
   }
 }
