@@ -1,13 +1,17 @@
 <div class="input-component">
   <div class="rounded-md grid-cols-1">
-    <div class="font-bold" *ngIf="label">{{ label }}</div>
+    <ng-container [ngSwitch]="type">
+      <ng-container *ngSwitchCase="'textarea'">
+        <textarea
+          class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          [placeholder]="placeholder || label" [(ngModel)]="value" (ngModelChange)="onChange(value)"></textarea>
+      </ng-container>
 
-    <input
-      type="text"
-      class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-      [placeholder]="placeholder"
-      [(ngModel)]="value"
-      (change)="onChange(value)"
-    />
+      <ng-container *ngSwitchDefault>
+        <input [type]="type"
+          class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          [placeholder]="placeholder || label" [(ngModel)]="value" (ngModelChange)="onChange(value)" />
+      </ng-container>
+    </ng-container>
   </div>
 </div>

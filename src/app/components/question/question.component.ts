@@ -1,16 +1,12 @@
 import {
   Component,
-  EventEmitter,
   forwardRef,
-  Input,
-  OnInit,
+  Input
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
+  NG_VALUE_ACCESSOR
 } from '@angular/forms';
-import { Answer } from 'src/app/interfaces/answer.interface';
 import { Question } from 'src/app/interfaces/question.interface';
 
 type ChangeEvent = (val: { answer: string; checkedOptions: string[] }) => void;

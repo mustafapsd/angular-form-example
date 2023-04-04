@@ -1,50 +1,34 @@
-<div class="form-component grid grid-cols-1 py-10">
+<div class="form-component grid grid-cols-1 py-10" *ngIf="questions">
   <form [formGroup]="questions">
     <div formArrayName="questions">
       <ng-container *ngIf="store.questions$ | async as questionList">
-        <ng-container *ngFor="let question of questionList; let i = index">
-          <app-question
-            class="block my-4"
-            [(ngModel)]="questions.controls['questions'].value[i]"
-            (ngModelChange)="checkFormIsValid()"
-            [ngModelOptions]="{ standalone: true }"
-            [question]="question"
-          ></app-question>
+        <ng-container *ngFor="let question of questionsArray.controls; let i = index">
+          <div [formGroup]="question">
+            <app-question class="block my-4" formControlName="answer" [question]="questionList[i]"></app-question>
+          </div>
         </ng-container>
       </ng-container>
     </div>
   </form>
 
-  <ng-container
-    *ngIf="questions.controls['questions'].value.length; else flatButton"
-  >
-    <button
-      routerLink="builder"
-      class="bg-none text-blue-500 font-bold text-left rounded-full"
-      (click)="showForm = !showForm"
-    >
+  <ng-container *ngIf="questions.controls['questions']?.value?.length; else flatButton">
+    <button routerLink="builder" class="bg-none text-blue-500 font-bold text-left rounded-full"
+      (click)="showForm = !showForm">
       + Add New Question
     </button>
   </ng-container>
 
   <ng-template #flatButton>
-    <button
-      routerLink="builder"
-      class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-      (click)="showForm = !showForm"
-    >
+    <button routerLink="builder" class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+      (click)="showForm = !showForm">
       Add New Question
     </button>
   </ng-template>
 
   <div class="flex justify-end mt-4">
-    <button
-      *ngIf="questions.controls['questions'].value.length"
-      [disabled]="!questions.valid"
-      [ngClass]="{ 'bg-gray-500': !questions.valid }"
-      class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-      (click)="submit()"
-    >
+    <button *ngIf="questions.controls['questions'].value.length" [disabled]="!questions.valid"
+      [ngClass]="{ 'bg-gray-500': !questions.valid }" class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+      (click)="submit()">
       Submit
     </button>
   </div>
@@ -56,9 +40,7 @@
     <div class="relative w-full h-full max-w-2xl md:h-auto">
       <!-- Modal content -->
       <div class="relative bg-white rounded-lg shadow p-8">
-        <app-form-builder
-          (questionAdded)="showForm = !showForm"
-        ></app-form-builder>
+        <app-form-builder (questionAdded)="showForm = !showForm"></app-form-builder>
       </div>
     </div>
   </div>

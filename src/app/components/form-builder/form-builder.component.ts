@@ -56,19 +56,27 @@ export class FormBuilderComponent implements AfterViewInit {
     }) as ValidatorFn;
   }
 
-  addOption() {
-    const options = this.questionForm.controls['options'] as FormArray;
+  get options() {
+    return this.questionForm.controls['options'] as FormArray<FormGroup>;
+  }
 
-    options.push(this.formBuilder.control(''));
+  addOption() {
+    this.options.push(
+      this.formBuilder.group({
+        option: ['', [Validators.required]],
+      })
+    );
   }
 
   removeOption(index: number) {
-    const options = this.questionForm.controls['options'] as FormArray;
-
-    options.removeAt(index);
+    this.options.removeAt(index);
   }
 
   addQuestion() {
+    const QUESTION = this.questionForm.value;
+
+    QUESTION.options = QUESTION.options.map((option: any) => option.option);
+
     this.formStore.addQuestion(this.questionForm.value);
     this.questionAdded.emit();
   }

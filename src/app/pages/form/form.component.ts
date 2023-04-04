@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Answer } from 'src/app/interfaces/answer.interface';
 import { FormStoreService } from 'src/app/services/form-store.service';
@@ -21,72 +21,77 @@ export class FormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.questions = this.formBuilder.group({
-      questions: this.formBuilder.array([]),
-    });
-
     this.store.questions$.subscribe((questions) => {
-      this.questions = this.formBuilder.group({
-        questions: this.formBuilder.array(
-          questions.map((question) => {
-            return this.formBuilder.group({
-              answer: [''],
-              checkedOptions: this.formBuilder.array([]),
-              required: [question.required],
-            });
-          })
-        ),
-      });
+      this.questions = this.formBuilder.group(
+        {
+          questions: this.formBuilder.array([]),
+        },
+        { validators: this.checkFormIsValid }
+      );
 
-      setTimeout(() => {
-        console.log(this.questions);
-        this.checkFormIsValid();
-      }, 200);
+      questions.forEach((question) => {
+        this.questionsArray.push(
+          this.formBuilder.group({
+            answer: [
+              {
+                answer: '',
+                checkedOptions: [],
+              },
+            ],
+            required: [question.required],
+          })
+        );
+      });
     });
   }
 
-  checkFormIsValid() {
-    const VALID = (
-      this.questions.controls['questions'].value as {
-        answer: string;
-        checkedOptions: string[];
-      }[]
-    ).every((question, index: number) => {
-      const QUESTION = this.store.questions$.value[index];
+  get questionsArray() {
+    return (
+      (this.questions?.controls['questions'] as FormArray<FormGroup>) || []
+    );
+  }
 
-      if (!QUESTION.required) {
+  checkFormIsValid: () => { [key: string]: any } | null = () => {
+    const VALID = this.questionsArray?.controls?.every(
+      (questionForm, index: number) => {
+        const question = questionForm.value.answer;
+        const QUESTION = this.store.questions$.value[index];
+
+        if (!QUESTION.required) {
+          return true;
+        }
+
+        const isCheckbox = QUESTION.type === 'checkbox';
+
+        if (isCheckbox) {
+          const allowOthers = QUESTION.allowOther;
+
+          const isValid = allowOthers
+            ? question.checkedOptions.length > 0 || question.answer.length > 0
+            : question.checkedOptions.length > 0;
+
+          if (!isValid) {
+            return false;
+          }
+        }
+
+        if (!isCheckbox) {
+          if (question.answer.length === 0) {
+            return false;
+          }
+        }
+
         return true;
-      }
-
-      const isCheckbox = QUESTION.type === 'checkbox';
-
-      if (isCheckbox) {
-        const allowOthers = QUESTION.allowOther;
-
-        const isValid = allowOthers
-          ? question.checkedOptions.length > 0 || question.answer.length > 0
-          : question.checkedOptions.length > 0;
-
-        if (!isValid) {
-          return false;
-        }
-      }
-
-      if (!isCheckbox) {
-        if (question.answer.length === 0) {
-          return false;
-        }
-      }
-
-      return true;
-    }, true);
+      },
+      true
+    );
 
     if (VALID) {
-      this.questions.setErrors(null);
+      return null;
     } else {
-      this.questions.setErrors({ invalid: true });
+      return { invalid: true };
     }
-  }
+  };
 
   submit() {
     this.store.clearAnswers();
@@ -94,8 +99,10 @@ export class FormComponent implements OnInit {
     this.questions.value.questions.forEach(
       (
         question: {
-          answer: string;
-          checkedOptions: string[];
+          answer: {
+            answer: string;
+            checkedOptions: string[];
+          };
         },
         index: number
       ) => {
@@ -103,10 +110,8 @@ export class FormComponent implements OnInit {
 
         const ANSWER = new Answer(QUESTION);
 
-        ANSWER.answer = question.answer;
-        ANSWER.checkedOptions = question.checkedOptions;
-
-        console.log(ANSWER);
+        ANSWER.answer = question.answer.answer;
+        ANSWER.checkedOptions = question.answer.checkedOptions;
 
         this.store.addAnswer(ANSWER);
       }

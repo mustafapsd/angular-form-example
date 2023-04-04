@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormComponent } from './form/form.component';
 import { RouterModule } from '@angular/router';
-import { FormBuilderComponent } from './form-builder/form-builder.component';
+import { FormBuilderComponent } from '../components/form-builder/form-builder.component';
 import { InputModule } from 'src/app/components/input/input.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormStoreService } from '../services/form-store.service';

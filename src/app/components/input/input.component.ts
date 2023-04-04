@@ -1,5 +1,18 @@
-import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output,
+} from '@angular/core';
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  Validator,
+} from '@angular/forms';
+import { InputTypes } from 'src/app/interfaces/question.interface';
 
 @Component({
   selector: 'app-input',
@@ -11,12 +24,20 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       useExisting: forwardRef(() => InputComponent),
       multi: true,
     },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => InputComponent),
+      multi: true,
+    },
   ],
 })
-export class InputComponent implements ControlValueAccessor {
+export class InputComponent implements ControlValueAccessor, Validator {
   @Input() value: string = '';
   @Input() label?: string;
-  @Input() placeholder?: string;
+  @Input() placeholder?: string = '';
+  @Input() type: InputTypes = 'text';
+
+  @Output() change = new EventEmitter<string>();
 
   onChange: (newValue: string) => void = () => {};
   onTouch: () => void = () => {};
@@ -27,9 +48,14 @@ export class InputComponent implements ControlValueAccessor {
 
   registerOnChange(fn: (newValue: string) => void): void {
     this.onChange = fn;
+    this.change.emit(this.value);
   }
 
   registerOnTouched(fn: () => void): void {
     this.onTouch = fn;
+  }
+
+  validate(control: AbstractControl): { [key: string]: any } | null {
+    return null;
   }
 }
